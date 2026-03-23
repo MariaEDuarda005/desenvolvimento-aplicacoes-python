@@ -1,19 +1,19 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
+import requests
 
-st.write("Streamlit supports a wide range of data visualizations, including [Plotly, Altair, and Bokeh charts](https://docs.streamlit.io/develop/api-reference/charts). 📊 And with over 20 input widgets, you can easily make your data interactive!")
+url = "https://api.coingecko.com/api/v3/coins/markets"
 
-all_users = ["Alice", "Bob", "Charly"]
-with st.container(border=True):
-    users = st.multiselect("Users", all_users, default=all_users)
-    rolling_average = st.toggle("Rolling average")
+parametros = {
+    "vs_currency": "brl",
+    "order": "market_cap_desc",
+    "per_page": 10,
+    "page": 1
+}
+resposta = requests.get(url,params=parametros)
 
-np.random.seed(42)
-data = pd.DataFrame(np.random.randn(20, len(users)), columns=users)
-if rolling_average:
-    data = data.rolling(7).mean().dropna()
-
-tab1, tab2 = st.tabs(["Chart", "Dataframe"])
-tab1.line_chart(data, height=250)
-tab2.dataframe(data, height=250, use_container_width=True)
+print(resposta.status_code)#TESTE
+for cripto in resposta.json():
+    print("Nome:", cripto["name"])
+    print("Preço:", cripto["current_price"])
+    print("Ranking:",  cripto["market_cap_rank"])
+    print("Variaçao 24h:", cripto["price_change_percentage_24h"])
+    print("-" * 25)
