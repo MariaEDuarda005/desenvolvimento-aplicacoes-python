@@ -1,73 +1,90 @@
-import requests
-import pandas as pd
-import streamlit as st
-import plotly.express as px
-import time
+# meu_dicionario = {}
+# meu_dic = dict()
 
-st.set_page_config(page_title="Criptomoedas", layout="wide")
+# alunos = {
+#     1: { 
+#         "nome": "João", 
+#         "idade": 20, 
+#         "curso": "Engenharia"
+#     },
+#     2: { 
+#         "nome": "Maria", 
+#         "idade": 22, 
+#         "curso": "Medicina"
+#     },
+#     3: { 
+#         "nome": "Pedro", 
+#         "idade": 19, 
+#         "curso": "Direito"
+#     },
+#     4: { 
+#         "nome": "Carol", 
+#         "idade": 21, 
+#         "curso": "Enfermagem"
+#     }
+# }
 
-st.title("📊 Dashboard de Criptomoedas")
+# alunos[3]["nome"] = "Carlos"
+# print(alunos)
+# print(alunos[2]["nome"])
 
-# 🔄 Atualização automática
-atualizar = st.sidebar.checkbox("Atualizar automaticamente")
-intervalo = st.sidebar.slider("Intervalo (segundos)", 10, 60, 30)
+# for id, nome in alunos.items():
+#     print(f"ID: {id}")
+#     print(f"Nome: {nome['nome']}")
+#     print("-" * 20)
 
-# 🔎 Filtro de quantidade
-quantidade = st.sidebar.slider("Quantidade de moedas", 5, 50, 10)
+# num_alunos = int(input("Quantos alunos vai ter na sua sala: "))
+# alunos = {}
 
-url = "https://api.coingecko.com/api/v3/coins/markets"
+# for i in range(num_alunos):
+#     print("Adicionando o aluno", i + 1)
+#     nome = input("Digite o nome do aluno: ")
+#     idade = int(input("Digite a idade do aluno: "))
+#     curso = input("Digite o curso do aluno: ")
 
-def carregar_dados(qtd):
-    parametros = {
-        "vs_currency": "brl",
-        "order": "market_cap_desc",
-        "per_page": qtd,
-        "page": 1
-    }
-    resposta = requests.get(url, params=parametros)
-    return resposta.json()
+#     alunos[i] = {
+#         "nome": nome,
+#         "idade": idade,
+#         "curso": curso
+#     }
 
-dados = carregar_dados(quantidade)
+# print(alunos)
 
-# 📦 DataFrame
-df = pd.DataFrame(dados)[[
-    "name",
-    "current_price",
-    "price_change_percentage_24h",
-    "market_cap_rank"
-]]
+# ------------------------------------------------------------------- #
 
-df.columns = ["Criptomoeda", "Preço (R$)", "Variação 24h (%)", "Ranking"]
+# i = range(5) # Quando coloca só um numero ele entende que começa no 0 e vai até o numero -1. Por exemplo vai de 0 a 4.
 
-# 📋 Tabela
-st.subheader("📋 Dados")
-st.dataframe(df, use_container_width=True)
+# for x in i:
+#     print(x+1)
 
-# 📊 Gráfico de preço
-st.subheader("💰 Preço das criptomoedas")
-fig1 = px.bar(
-    df,
-    x="Preço (R$)",
-    y="Criptomoeda",
-    orientation="h",
-    color="Preço (R$)",
-    color_continuous_scale="blues"
-)
-st.plotly_chart(fig1, use_container_width=True)
+for m in range(2,15, 5):
+    print(m) # 2,17,32,47... (começa no 2 e vai somando 15 a cada iteração)
 
-# 📉 Gráfico de variação
-st.subheader("📉 Variação nas últimas 24h")
-fig2 = px.bar(
-    df,
-    x="Variação 24h (%)",
-    y="Criptomoeda",
-    orientation="h",
-    color="Variação 24h (%)",
-    color_continuous_scale="RdYlGn"
-)
-st.plotly_chart(fig2, use_container_width=True)
+print("-----------------")
+for i in range(2,5):
+    print(i) # 2,3,4
 
-# 🔄 Auto refresh
-if atualizar:
-    time.sleep(intervalo)
-    st.rerun()
+tupla = ("pera", "uva", "maça")
+for fruta in range(len(tupla)):
+    lista_formatada = [item.capitalize() for item in tupla]
+    print(f"Indice: {fruta} - Fruta: {lista_formatada[fruta]}")
+
+
+pares = [x for x in range(10) if (x % 2 ==0)]
+print(pares)
+
+idade = int(input("Digite sua idade:"))
+
+if idade <= 18:
+    print("Você é menor de idade")
+else:
+    print("Você é maior de idade")
+
+senha_protegida = "senha123"
+
+senha = str(input("Digite sua senha: "))
+
+if senha == senha_protegida:
+    print("Acesso permitido")
+else:
+    print("Acesso negado")
