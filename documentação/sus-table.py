@@ -2,67 +2,60 @@ import streamlit as st
 import pandas as pd
 import requests
 import plotly.express as px
+
 st.set_page_config(page_title="Vacinação", layout="wide")
 
 st.title("Vacinação 2025 (API)")
 
 BASE_URL = "https://apidadosabertos.saude.gov.br/vacinacao/doses-aplicadas-pni-2025"
 
-# st.sidebar.header("Paginação")
 
-# limit = st.sidebar.selectbox("Linhas por página", [10, 25, 50, 100], index=1)
-# page = st.sidebar.number_input("Página", min_value=1, step=1)
-
-# offset = (page - 1) * limit
-
-@st.cache_data(ttl=60)
+@st.cache_data(ttl=1000)
 def load_data(limit, offset):
     params = {
         "limit": limit,
         "offset": offset
     }
 
-    response = requests.get(BASE_URL, params=params, headers={"accept": "application/json"})
-    
+    response = requests.get(
+        BASE_URL,
+        params=params,
+        headers={"accept": "application/json"}
+    )
+
     if response.status_code != 200:
         st.error("Erro ao acessar API")
         st.stop()
 
     data = response.json()
-    
+
     registros = data.get("doses_aplicadas_pni", [])
-    
+
     df = pd.json_normalize(registros)
     df.columns = [c.lower() for c in df.columns]
 
     return df
 
-df = load_data(60, 1)
 
-st.write(f"Página {60} | Offset {1}")
+df = load_data(1000, 1)
+
+st.write(f"Página {100} | Offset {1}")
 
 st.dataframe(df, use_container_width=True)
 
-
+# =========================
 # GRÁFICOS DE ANÁLISE
+# =========================
 
 st.subheader("Gráficos de Análise")
 
-st.markdown("""
-<style>
-[data-testid="stPlotlyChart"] {
-    background-color: #111827;
-    padding: 15px;
-    border-radius: 15px;
-    margin-bottom: 20px;
-}
-</style>
-""", unsafe_allow_html=True)
-
 col1, col2 = st.columns(2)
 
+# =========================
 # RANKING DE VACINAS
+# =========================
 with col1:
+
     ranking = (
         df["descricao_vacina"]
         .value_counts()
@@ -88,15 +81,18 @@ with col1:
         showlegend=False,
         xaxis_title="Total de doses",
         yaxis_title="",
-        paper_bgcolor="#111827",
-        plot_bgcolor="#111827",
-        font_color="white"
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="black"
     )
 
     st.plotly_chart(fig_rank, use_container_width=True)
 
+# =========================
 # MAPA POR ESTADO
+# =========================
 with col2:
+
     estados = (
         df["sigla_uf_paciente"]
         .value_counts()
@@ -105,7 +101,12 @@ with col2:
 
     estados.columns = ["UF", "Quantidade"]
 
-    geojson_url = "https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson"
+    geojson_url = (
+        "https://raw.githubusercontent.com/"
+        "codeforamerica/click_that_hood/master/"
+        "public/data/brazil-states.geojson"
+    )
+
     brasil_geojson = requests.get(geojson_url).json()
 
     fig_mapa = px.choropleth(
@@ -127,16 +128,21 @@ with col2:
     fig_mapa.update_layout(
         height=500,
         margin={"r": 0, "t": 40, "l": 0, "b": 0},
-        paper_bgcolor="#111827",
-        plot_bgcolor="#111827",
-        font_color="white"
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="black"
     )
 
     st.plotly_chart(fig_mapa, use_container_width=True)
 
+# =========================
+# LINHA INFERIOR
+# =========================
 col3, col4, col5 = st.columns(3)
 
+# =========================
 # SEXO
+# =========================
 with col3:
 
     sexo = (
@@ -147,7 +153,6 @@ with col3:
 
     sexo.columns = ["Sexo", "Quantidade"]
 
-    # Troca siglas por nomes
     sexo["Sexo"] = sexo["Sexo"].replace({
         "M": "Masculino",
         "F": "Feminino"
@@ -163,16 +168,19 @@ with col3:
     )
 
     fig_sexo.update_layout(
-        paper_bgcolor="#111827",
-        plot_bgcolor="#111827",
-        font_color="white",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="black",
         legend_title="Sexo"
     )
 
     st.plotly_chart(fig_sexo, use_container_width=True)
 
+# =========================
 # FAIXA ETÁRIA
+# =========================
 with col4:
+
     idade = df.copy()
 
     idade["numero_idade_paciente"] = pd.to_numeric(
@@ -224,15 +232,18 @@ with col4:
         showlegend=False,
         xaxis_title="Faixa etária",
         yaxis_title="Total de doses",
-        paper_bgcolor="#111827",
-        plot_bgcolor="#111827",
-        font_color="white"
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="black"
     )
 
     st.plotly_chart(fig_faixa, use_container_width=True)
 
+# =========================
 # COR / RAÇA
+# =========================
 with col5:
+
     raca = (
         df["nome_raca_cor_paciente"]
         .value_counts()
@@ -251,9 +262,9 @@ with col5:
     )
 
     fig_raca.update_layout(
-        paper_bgcolor="#111827",
-        plot_bgcolor="#111827",
-        font_color="white"
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="black"
     )
 
     st.plotly_chart(fig_raca, use_container_width=True)
